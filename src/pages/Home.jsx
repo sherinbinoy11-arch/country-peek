@@ -1,72 +1,49 @@
-import { useState, useEffect } from "react";
-import SearchBar from "../components/SearchBar";
+import { useState } from "react";
+import FilterBar from "../components/FilterBar";
 import CountryCard from "../components/CountryCard";
 
-function Home() {
-  const [query, setQuery] = useState("");
+function Home({ countries }) {
 
-  // NEW STATE
-  const [countries, setCountries] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [region, setRegion] = useState("All");
+  const [sortBy, setSortBy] = useState("");
 
-  // NEW EFFECT (debounced fetch)
-  useEffect(() => {
-    if (!query) {
-      setCountries([]);
-      setError(null);
-      return;
-    }
+  const displayed = [...countries]
+    .filter((c) => region === "All" || c.region === region)
+    .sort((a, b) => {
 
-    const timer = setTimeout(() => {
-      setLoading(true);
+      if (sortBy === "name") {
+        return a.name.common.localeCompare(b.name.common);
+      }
 
-      fetch(`https://restcountries.com/v3.1/name/${query}`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Not found");
-          return res.json();
-        })
-        .then((data) => {
-          setCountries(data);
-          setError(null);
-        })
-        .catch(() => {
-          setCountries([]);
-          setError("No countries found.");
-        })
-        .finally(() => setLoading(false));
-    }, 400);
+      if (sortBy === "population") {
+        return b.population - a.population;
+      }
 
-    return () => clearTimeout(timer);
-  }, [query]);
+      return 0;
+
+    });
 
   return (
-    <div className="home">
-      <SearchBar query={query} onQueryChange={setQuery} />
+    <div>
 
-      {/* Loading */}
-      {loading && <p className="home__status">Loading...</p>}
+      <FilterBar
+        region={region}
+        onRegionChange={setRegion}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+      />
 
-      {/* Error */}
-      {error && (
-        <p className="home__status home__status--error">{error}</p>
-      )}
+      <div className="cards-grid">
 
-      {/* Results */}
-      {!loading && !error && countries.length > 0 && (
-        <div className="cards-grid">
-          {countries.map((country) => (
-            <CountryCard key={country.cca3} country={country} />
-          ))}
-        </div>
-      )}
+        {displayed.map((country) => (
+          <CountryCard
+            key={country.cca3}
+            country={country}
+          />
+        ))}
 
-      {/* Empty state */}
-      {!loading && !error && countries.length === 0 && !query && (
-        <p className="home__status">
-          Start searching to explore countries.
-        </p>
-      )}
+      </div>
+
     </div>
   );
 }
