@@ -1,18 +1,46 @@
-.fav-btn {
-  margin-top: 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 6px 8px;
-  color: #666;
+body {
+  font-family: Arial;
+  margin: 0;
 }
 
-.fav-btn:hover {
-  color: #333;
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
 }
 
-.fav-btn--saved {
-  color: crimson;
-  font-weight: bold;
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  text-decoration: none;
+  color: black;
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.card img {
+  width: 100%;
+}
+
+.card__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 500px) {
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
 }
